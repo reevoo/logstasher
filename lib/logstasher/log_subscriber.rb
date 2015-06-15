@@ -53,13 +53,13 @@ module LogStasher
 
     def extract_request(payload)
       {
-        :action     => payload[:action],
-        :controller => payload[:controller],
-        :format     => extract_format(payload),
-        :ip         => request.remote_ip,
-        :method     => payload[:method],
-        :path       => extract_path(payload),
-        :route      => "#{payload[:controller]}##{payload[:action]}"
+        action:         payload[:action],
+        controller:     payload[:controller],
+        format:         extract_format(payload),
+        ip:             request.remote_ip,
+        method:         payload[:method],
+        request_path:   extract_path(payload),
+        route:          "#{payload[:controller]}##{payload[:action]}"
       }
     end
 
@@ -68,8 +68,15 @@ module LogStasher
       if payload[:exception]
         exception, message = payload[:exception]
         status = ActionDispatch::ExceptionWrapper.status_code_for_exception(exception)
-        message = "#{exception}\n#{message}\n#{($!.backtrace.join("\n"))}"
-        { :status => status, :error => message }
+        result = { status: status }
+        result[:error_class] = exception
+        result[:error_message] = message
+        result[:error_source] = $!.backtrace.find { |line| line.match(/\A#{Rails.root}/) }
+        result[:error_backtrace] = $!.backtrace
+        if $!.respond_to?(:cause) && $!.cause
+          result[:error_cause] = [$!.cause.class.to_s, $!.cause.message].concat($!.cause.backtrace)
+        end
+        result
       else
         {}
       end

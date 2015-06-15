@@ -3,7 +3,7 @@ module LogStasher
     config.logstasher = ::ActiveSupport::OrderedOptions.new
     config.logstasher.enabled = false
     config.logstasher.include_parameters = true
-    config.logstasher.serialize_parameters = true
+    config.logstasher.serialize_parameters = false
     config.logstasher.silence_standard_logging = false
     config.logstasher.logger = nil
     config.logstasher.log_level = ::Logger::INFO
@@ -46,7 +46,7 @@ module LogStasher
 
     def default_logger
       unless @default_logger
-        path = ::Rails.root.join('log', "logstash_#{::Rails.env}.log")
+        path = ::Rails.root.join('log', "logstasher.log")
         ::FileUtils.touch(path) # prevent autocreate messages in log
 
         @default_logger =  ::Logger.new(path)

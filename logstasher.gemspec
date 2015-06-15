@@ -3,11 +3,11 @@ $:.push File.expand_path("../lib", __FILE__)
 require "logstasher/version"
 
 Gem::Specification.new do |s|
-  s.name        = "md-logstasher"
+  s.name        = "rv-logstasher"
   s.version     = LogStasher::VERSION
-  s.authors     = ["Devin Christensen"]
-  s.email       = ["devin.christensen@moneydesktop.com"]
-  s.homepage    = "https://github.com/moneydesktop/logstasher"
+  s.authors     = ["David Sevcik"]
+  s.email       = ["david.sevcik@reevoo.com"]
+  s.homepage    = "https://github.com/reevoo/logstasher"
   s.summary     = %q{Awesome rails logs}
   s.description = %q{Awesome rails logs}
   s.license     = 'MIT'

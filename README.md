@@ -8,7 +8,7 @@ This is a fork of
 [shadabahmed/logstasher](https://github.com/shadabahmed/logstasher). It has
 been updated to use the [latest event
 schema](https://logstash.jira.com/browse/LOGSTASH-675) and customized to better
-fit the needs of MoneyDesktop--though it is still generally useful. It is not
+fit the needs of Reevoo though it is still generally useful. It is not
 backward compatible with its progenitor.
 
 ## Purpose
@@ -61,7 +61,7 @@ add the following to your `<environment>.rb`
 
     # Disable logging of request parameters
     config.logstasher.include_parameters = false
-    
+
 ## Adding custom fields to the log
 
 Since some fields are very specific to your application, e.g., *user_name*,

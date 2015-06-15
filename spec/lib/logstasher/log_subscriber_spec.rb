@@ -51,19 +51,19 @@ describe LogStasher::LogSubscriber do
     it 'logs the event in logstash format' do
       expect(logger).to receive(:<<) do |json|
         expect(JSON.parse(json)).to eq({
-          '@timestamp' => timestamp,
-          '@version'   => '1',
-          'tags'       => ['request'],
-          'action'     => payload[:action],
-          'controller' => payload[:controller],
-          'format'     => payload[:format],
-          'params'     => json_params,
-          'ip'         => mock_request.remote_ip,
-          'method'     => payload[:method],
-          'path'       => payload[:path],
-          'route'      => "#{payload[:controller]}##{payload[:action]}",
-          'status'     => payload[:status],
-          'runtime'    => { 'total' => duration }
+          '@timestamp'    => timestamp,
+          '@version'      => '1',
+          'tags'          => ['request'],
+          'action'        => payload[:action],
+          'controller'    => payload[:controller],
+          'format'        => payload[:format],
+          'params'        => json_params,
+          'ip'            => mock_request.remote_ip,
+          'method'        => payload[:method],
+          'request_path'  => payload[:path],
+          'route'         => "#{payload[:controller]}##{payload[:action]}",
+          'status'        => payload[:status],
+          'runtime'       => { 'total' => duration }
         })
       end
 
@@ -142,7 +142,9 @@ describe LogStasher::LogSubscriber do
 
         expect(logger).to receive(:<<) do |json|
           log = JSON.parse(json)
-          expect(log['error']).to match /^RuntimeError\nit no work\n.+/m
+          expect(log['error_class']).to eq('RuntimeError')
+          expect(log['error_message']).to eq('it no work')
+          expect(log['error_backtrace']).to be_instance_of(Array)
           expect(log['status']).to eq 500
           expect(log['tags']).to include('exception')
         end
