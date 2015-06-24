@@ -5,8 +5,8 @@ require "logstasher/version"
 Gem::Specification.new do |s|
   s.name        = "rv-logstasher"
   s.version     = LogStasher::VERSION
-  s.authors     = ["David Sevcik"]
-  s.email       = ["david.sevcik@reevoo.com"]
+  s.authors     = ['Shadab Ahmed', 'Devin Christensen', 'David Sevcik']
+  s.email       = ['shadab.ansari@gmail.com', 'devin.christensen@moneydesktop.com', 'david.sevcik@reevoo.com']
   s.homepage    = "https://github.com/reevoo/logstasher"
   s.summary     = %q{Awesome rails logs}
   s.description = %q{Awesome rails logs}
