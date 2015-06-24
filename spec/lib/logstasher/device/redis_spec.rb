@@ -39,8 +39,8 @@ describe LogStasher::Device::Redis do
 
   it 'does not allow unsupported data types' do
     expect {
-      device = LogStasher::Device::Redis.new(data_type: 'blargh')
-    }.to raise_error()
+      LogStasher::Device::Redis.new(data_type: 'blargh')
+    }.to raise_error RuntimeError
   end
 
   it 'quits the redis connection on #close' do
