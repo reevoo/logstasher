@@ -28,7 +28,7 @@ Processing by SessionsController#new as HTML
 Completed 200 OK in 532ms (Views: 62.4ms | ActiveRecord: 0.0ms | ND API: 0.0ms)
 ```
 
-Will look like this in your `logstash_production.log`:
+Will look like this in your `production.log`:
 ```json
 {"tags":["request"],"method":"GET","path":"/","format":"html","controller":"file_servers"
 ,"action":"index","status":200,"duration":28.34,"view":25.96,"db":0.88,"ip":"127.0.0.1","route":"file_servers#index",
@@ -44,7 +44,7 @@ instead.
 
 In your Gemfile:
 
-    gem 'md-logstasher'
+    gem 'rv-logstasher'
 
 ### Configure your `<environment>.rb` e.g. `development.rb`
 
