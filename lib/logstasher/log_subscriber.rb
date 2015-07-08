@@ -28,6 +28,7 @@ module LogStasher
       fields.merge! extract_exception(payload)
       fields.merge! extract_parameters(payload)
       fields.merge! appended_fields
+      fields.merge! release
 
       event = LogStash::Event.new(fields.merge('tags' => tags))
 
@@ -69,17 +70,15 @@ module LogStasher
         exception, message = payload[:exception]
         status = ActionDispatch::ExceptionWrapper.status_code_for_exception(exception)
         error_source = $!.backtrace.find { |line| line.match(/\A#{Rails.root}/) }
-        release_match = Rails.root.to_s.match(/releases\/([^\/]+)/)
 
         result = { status: status }
         result[:error_class] = exception
         result[:error_message] = message
-        result[:error_source] = error_source.gsub(/\A#{Rails.root}/, '') if error_source
+        result[:error_source] = error_source.gsub(/\A#{Dir.pwd}/, '') if error_source
         result[:error_backtrace] = $!.backtrace
         if $!.respond_to?(:cause) && $!.cause
           result[:error_cause] = [$!.cause.class.to_s, $!.cause.message].concat($!.cause.backtrace)
         end
-        result[:release] = release_match[1] if release_match
         result
       else
         {}
@@ -134,6 +133,11 @@ module LogStasher
       else
         {}
       end
+    end
+
+    def release
+      release_match = Dir.pwd.match(/releases\/([^\/]+)/)
+      release_match ? { release: release_match[1] } : {}
     end
 
     def request
