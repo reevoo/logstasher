@@ -60,4 +60,5 @@ module LogStasher
   end
 end
 
+require 'logstasher/log_formatter'
 require 'logstasher/railtie' if defined?(Rails)
