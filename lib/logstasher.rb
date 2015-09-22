@@ -1,4 +1,5 @@
 require 'logger'
+require 'logstasher/log_formatter'
 
 module LogStasher
   class << self
@@ -50,6 +51,12 @@ module LogStasher
       @logger = log
     end
 
+    def logger_for_app(app_tag, root_dir = nil, level = Logger::INFO)
+      logger.formatter = LogFormatter.new(app_tag, root_dir)
+      logger.level = level
+      logger
+    end
+
     def silence_standard_logging?
       if @silence_standard_logging.nil?
         @silence_standard_logging = false
@@ -60,5 +67,4 @@ module LogStasher
   end
 end
 
-require 'logstasher/log_formatter'
 require 'logstasher/railtie' if defined?(Rails)

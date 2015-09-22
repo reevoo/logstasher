@@ -14,7 +14,7 @@ module LogStasher
         '@version' => '1',
         severity: severity.downcase,
         tags: [app_tag],
-      }.merge(format(data)).to_json
+      }.merge(format(data)).to_json + "\n"
     end
 
     def format(data)
