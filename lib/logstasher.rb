@@ -1,4 +1,5 @@
 require 'logger'
+require 'fileutils'
 require 'logstasher/log_formatter'
 
 module LogStasher
@@ -37,9 +38,10 @@ module LogStasher
       @serialize_parameters
     end
 
-    def initialize_logger(device = $stdout, level = ::Logger::INFO)
+    def initialize_logger(device = STDOUT, level = ::Logger::INFO, formatter = nil)
       ::Logger.new(device).tap do |new_logger|
         new_logger.level = level
+        new_logger.formatter = formatter if formatter
       end
     end
 
@@ -51,10 +53,13 @@ module LogStasher
       @logger = log
     end
 
-    def logger_for_app(app_tag, root_dir = nil, level = Logger::INFO)
-      logger.formatter = LogFormatter.new(app_tag, root_dir)
-      logger.level = level
-      logger
+    def logger_for_app(app_tag, root_dir = nil, device = nil, level = Logger::INFO)
+      if root_dir && !device
+        device = File.join(root_dir, 'log', 'logstasher.log')
+        FileUtils.touch(device)
+      end
+      formatter = LogFormatter.new(app_tag, root_dir)
+      initialize_logger(device || STDOUT, level, formatter)
     end
 
     def silence_standard_logging?

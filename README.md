@@ -36,9 +36,7 @@ Will look like this in your `production.log`:
 "site":"internal","@timestamp":"2013-04-30T13:00:46.354500+00:00","@version":"1"}
 ```
 
-From there, it's trivial to forward them to your logstash indexer. You can even
-use the included redis log device to send the logs directly to a redis broker
-instead.
+From there, it's trivial to forward them to your logstash indexer.
 
 ## Installation
 

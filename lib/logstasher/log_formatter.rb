@@ -1,5 +1,5 @@
 module LogStasher
-  class LogFormatter < Logger::Formatter
+  class LogFormatter
     attr_reader :app_tag
     attr_reader :root_dir
 
@@ -9,12 +9,14 @@ module LogStasher
     end
 
     def call(severity, datetime, _, data)
-      {
+      event = {
         '@timestamp' => datetime.utc,
         '@version' => '1',
         severity: severity.downcase,
-        tags: [app_tag],
-      }.merge(format(data)).to_json + "\n"
+      }.merge(format(data))
+
+      event[:tags] = Array(event[:tags]).unshift(app_tag)
+      event.to_json + "\n"
     end
 
     def format(data)
@@ -33,7 +35,7 @@ module LogStasher
 
     def format_exception(exception) # rubocop:disable Metrics/AbcSize
       result = {
-        tags: [app_tag, 'exception'],
+        tags: 'exception',
         error_class: exception.class.to_s,
         error_message: exception.message,
         error_backtrace: exception.backtrace,
