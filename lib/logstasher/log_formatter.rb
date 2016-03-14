@@ -10,13 +10,14 @@ module LogStasher
       @release = $1 if root_dir && root_dir =~ /releases\/([^\/]+)/
     end
 
-    def call(severity, datetime, _, data)
+    def call(severity, datetime, progname, message)
       event = {
         '@timestamp' => datetime.utc,
         '@version' => '1',
         severity: severity.downcase,
-      }.merge(format(data))
+      }.merge(format(message))
 
+      event.merge!(format(progname)) if progname.is_a?(Exception)
       event[:tags] = base_tags + Array(event[:tags])
       event.to_json + "\n"
     end

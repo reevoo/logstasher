@@ -5,11 +5,11 @@ require "logstasher/version"
 Gem::Specification.new do |s|
   s.name        = "rv-logstasher"
   s.version     = LogStasher::VERSION
-  s.authors     = ['Shadab Ahmed', 'Devin Christensen', 'David Sevcik']
-  s.email       = ['shadab.ansari@gmail.com', 'devin.christensen@moneydesktop.com', 'david.sevcik@reevoo.com']
+  s.authors     = ['David Sevcik', 'Alex Malkov']
+  s.email       = ['david.sevcik@reevoo.com', 'alex.malkov@reevoo.com']
   s.homepage    = "https://github.com/reevoo/logstasher"
-  s.summary     = %q{Awesome rails logs}
-  s.description = %q{Awesome rails logs}
+  s.summary     = %q{Produces log in the logstash format}
+  s.description = %q{Produces log in the logstash format}
   s.license     = 'MIT'
 
   s.files         = `git ls-files`.split("\n")
