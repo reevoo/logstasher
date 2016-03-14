@@ -1,6 +1,6 @@
 # Logstasher
 
-**Awesome Logging for Rails**
+**Awesome Logging for Rack applications**
 
 ## History
 
@@ -13,7 +13,7 @@ backward compatible with its progenitor.
 
 ## Purpose
 
-This gem makes it easy to generate logstash compatible logs for your rails app.
+This gem makes it easy to generate logstash compatible logs for your applications.
 
 A request that looks like this in your `production.log`:
 ```text
@@ -38,7 +38,7 @@ Will look like this in your `production.log`:
 
 From there, it's trivial to forward them to your logstash indexer.
 
-## Installation
+## Installation for Rails Application
 
 In your Gemfile:
 
@@ -52,7 +52,7 @@ In your Gemfile:
     # Optionally silience the standard logging to <environment>.log
     config.logstasher.silence_standard_logging = true
 
-## Logging params
+### Logging params
 
 By default, Logstasher will add params as a JSON encoded string. To disable,
 add the following to your `<environment>.rb`
@@ -60,7 +60,7 @@ add the following to your `<environment>.rb`
     # Disable logging of request parameters
     config.logstasher.include_parameters = false
 
-## Adding custom fields to the log
+### Adding custom fields to the log
 
 Since some fields are very specific to your application, e.g., *user_name*,
 it is left upto you to add them. Here's how to do it:
@@ -76,13 +76,44 @@ it is left upto you to add them. Here's how to do it:
       end
     end
 
-## Versions
-All versions require Rails 3.0.x and higher and Ruby 1.9.2+. Tested on Rails 4
-and Ruby 2.0
+## Installation for Grape Application
 
-## Development
- - Run tests - `rake`
+### In your Gemfile: 
+
+    gem "rv-logstasher"
+    gem "grape_logging"
+    
+    
+### Init logger:
+    
+    module TestApp
+      def self.logger
+        @logger ||= LogStasher.logger_for_app('app_name', Rack::Directory.new("").root, STDOUT)
+      end
+    end
+
+### Setup Grape request/exception logging
+     
+    module TestApp
+      class API < Grape::API
+        logger TestApp.logger
+        use GrapeLogging::Middleware::RequestLogger, logger: TestApp.logger
+        
+        rescue_from TestApp::NotFound do |err|
+          # Tag your exception 
+          API.logger.info(exception: err, tags: "rescued_exception", status: 404)
+          error_response(message: "Not found", status: 404)
+        end
+
+        rescue_from :all do |e|
+          API.logger.error(e)
+          error_response(message: e.message, status: 500)
+        end
+      end
+    end
+
+
 
 ## Copyright
 
-Copyright (c) 2014 Shadab Ahmed, released under the MIT license
+Copyright (c) 2016 Reevoo Ltd, released under the MIT license
