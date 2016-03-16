@@ -1,3 +1,5 @@
+require 'json'
+
 module LogStasher
   class LogFormatter
     attr_reader :base_tags
@@ -19,7 +21,7 @@ module LogStasher
 
       event.merge!(format(progname)) if progname.is_a?(Exception)
       event[:tags] = base_tags + Array(event[:tags])
-      event.to_json + "\n"
+      JSON.generate(event) + "\n"
     end
 
     def format(data)
