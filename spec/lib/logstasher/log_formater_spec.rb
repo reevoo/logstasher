@@ -25,25 +25,32 @@ describe LogStasher::LogFormatter do
     ]
   end
 
-  subject { described_class.new('base-tag', '/my/root/releases/12345') }
+  let(:instance) { described_class.new('base-tag', '/my/root/releases/12345') }
 
   describe '#release' do
+    subject(:release) { instance.release }
+
     it 'returns indetifier of release from the root dir' do
-      expect(subject.release).to eq('12345')
+      expect(release).to eq('12345')
     end
   end
 
   describe '#format' do
+    subject(:format) { instance.format(data) }
+
     context 'with string as an argument' do
+      let(:data) { 'foo' }
+
       it 'returns hash with message key' do
-        expect(subject.format('foo')).to eq({ message: 'foo' })
+        expect(format).to eq({ message: 'foo' })
       end
     end
 
     context 'with exception as an argument' do
+      let(:data) { exception }
 
       it 'returns hash describing the exception' do
-        expect(subject.format(exception)).to match({
+        expect(format).to match({
           tags:            'exception',
           error_class:     'TestError',
           error_message:   exception_message,
@@ -60,9 +67,11 @@ describe LogStasher::LogFormatter do
     end
 
     context 'with hash as an argument' do
+      let(:data) { { foo: 'bar', path: '/my/path' } }
+
       it 'returns hash as it is with path attribute copied to request_path' do
         # logstash overrides the path attribute
-        expect(subject.format({ foo: 'bar', path: '/my/path' })).to match({
+        expect(format).to match({
           foo:          'bar',
           path:         '/my/path',
           request_path: '/my/path',
@@ -71,8 +80,10 @@ describe LogStasher::LogFormatter do
     end
 
     context 'with hash containing exception key as an argument' do
+      let(:data) { { exception: exception, tags: 'custom_tag', foo: 'bar' } }
+
       it 'returns hash describing the exception merged with items from origina hash' do
-        expect(subject.format({ exception: exception, tags: 'custom_tag', foo: 'bar' })).to match({
+        expect(format).to match({
           tags:            'custom_tag',
           error_class:     'TestError',
           error_message:   exception_message,
@@ -91,15 +102,22 @@ describe LogStasher::LogFormatter do
   end
 
   describe '#call' do
+    let(:args) do
+      [
+        :error,
+        Time.new(2016, 01, 02, 03, 04, 05),
+        progname,
+        exception_message
+      ]
+    end
+
+    subject(:call) { instance.call(*args) }
+
     context 'when progname is nil' do
       let(:progname) { nil }
 
       it 'returns hash with message key' do
-        result = JSON.parse(subject.call(
-          :error,
-          Time.new(2016, 01, 02, 03, 04, 05),
-          progname,
-          exception_message)).deep_symbolize_keys!
+        result = JSON.parse(call).deep_symbolize_keys!
 
         expect(result).to include({
           message:  exception_message,
@@ -115,15 +133,10 @@ describe LogStasher::LogFormatter do
       let(:progname) { exception }
 
       it 'returns hash describing the exception' do
-        result = JSON.parse(subject.call(
-          :error,
-          Time.new(2016, 01, 02, 03, 04, 05),
-          progname,
-          exception_message)).deep_symbolize_keys!
+        result = JSON.parse(call).deep_symbolize_keys!
 
         expect(result).to include({
           message:         exception_message,
-          tags:            'exception',
           error_class:     'TestError',
           error_message:   exception_message,
           error_source:    '/foo/broken.rb',
