@@ -93,6 +93,9 @@ module LogStasher
     def extract_parameters(payload)
       if LogStasher.include_parameters?
         external_params = payload[:params].except(*INTERNAL_PARAMS)
+        LogStasher.filter_parameters.each do |param|
+          external_params[param] = '[FILTERED]' unless external_params[param].nil?
+        end
 
         if LogStasher.serialize_parameters?
           { :params => JSON.generate(external_params) }
