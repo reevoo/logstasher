@@ -74,8 +74,8 @@ module LogStasher
       @filter_parameters ||= ['password', 'password_confirmation']
     end
 
-    def filter_parameters=(params)
-      @filter_parameters = params
+    def filter_paramterss=(params)
+      @filter_paramterss = params
     end
   end
 end
