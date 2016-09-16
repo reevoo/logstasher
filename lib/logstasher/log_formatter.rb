@@ -34,12 +34,29 @@ module LogStasher
     private
 
     def format_hash(data)
-      data.merge!(request_path: data[:path]) if data[:path] # logstash overrides the path attribute
-      if data[:exception]
-        format_exception(data.delete(:exception)).merge(data)
+      formatted_data = filter_parameters(data)
+
+      # logstash overrides the path attribute
+      formatted_data.merge!(request_path: formatted_data[:path]) if formatted_data[:path]
+
+      if formatted_data[:exception]
+        format_exception(formatted_data.delete(:exception)).merge(formatted_data)
       else
-        data
+        formatted_data
       end
+    end
+
+    def filter_parameters(data)
+      return data unless data[:params]
+
+      # We override fields, don't want to risk mutating params object!
+      filtered_data = data.dup
+
+      LogStasher.filter_parameters.each do |param|
+        filtered_data[:params][param] = '[FILTERED]' unless filtered_data[:params][param].nil?
+      end
+
+      filtered_data
     end
 
     def format_exception(exception)

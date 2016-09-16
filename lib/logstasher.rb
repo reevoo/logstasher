@@ -69,6 +69,14 @@ module LogStasher
 
       @silence_standard_logging
     end
+
+    def filter_parameters
+      @filter_parameters ||= ['password', 'password_confirmation']
+    end
+
+    def filter_paramterss=(params)
+      @filter_paramterss = params
+    end
   end
 end
 

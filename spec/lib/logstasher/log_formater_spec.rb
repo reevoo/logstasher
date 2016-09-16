@@ -99,6 +99,39 @@ describe LogStasher::LogFormatter do
         })
       end
     end
+
+    context 'when the hash contains filtered parameters' do
+      describe 'defaults' do
+        let(:data) do
+          {
+            params: {
+              'password' => '1337passWORD',
+              'password_confirmation' => '1337passWORD'
+            }
+          }
+        end
+
+        it 'filters out password and password_confirmation' do
+          expect(format).to match(
+            params: {
+              'password' => '[FILTERED]',
+              'password_confirmation' => '[FILTERED]'
+            }
+          )
+        end
+      end
+
+      context 'with specified filtering' do
+        let(:data) { {params: {'foo' => 'bar', 'blah' => 'something'}} }
+        before(:each) do
+          allow(::LogStasher).to receive(:filter_parameters).and_return(['foo'])
+        end
+
+        it 'filters out the specified fields only' do
+          expect(format).to match(params: {'foo' => '[FILTERED]', 'blah' => 'something'})
+        end
+      end
+    end
   end
 
   describe '#call' do
