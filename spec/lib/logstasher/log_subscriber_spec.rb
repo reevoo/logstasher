@@ -35,12 +35,11 @@ describe LogStasher::LogSubscriber do
   describe '#process_action' do
     let(:timestamp) { ::Time.new.utc.iso8601(3) }
     let(:duration) { 12.4 }
-    let(:params) { {'foo' => 'bar'} }
     let(:json_params) { JSON.dump(payload[:params]) }
     let(:payload) {{
       :controller => 'users',
       :action     => 'show',
-      :params     => params,
+      :params     => { 'foo' => 'bar' },
       :format     => 'text/plain',
       :method     => 'method',
       :path       => '/users/1',
@@ -104,32 +103,6 @@ describe LogStasher::LogSubscriber do
       end
 
       subject.process_action(event)
-    end
-
-    it 'can be configured to filter out certain parameters' do
-      allow(::LogStasher).to receive(:filter_parameters).and_return(['foo'])
-
-      expect(logger).to receive(:<<) do |json|
-        expect(JSON.parse(json)['params']).to eq('{"foo":"[FILTERED]"}')
-      end
-
-      subject.process_action(event)
-    end
-
-    context 'with passwords in parameters' do
-      let(:params) do
-        {'password' => '1337passWORD', 'password_confirmation' => '1337passWORD'}
-      end
-
-      it 'filters them out by default' do
-        expect(logger).to receive(:<<) do |json|
-          expect(JSON.parse(json)['params']).to eq(
-            '{"password":"[FILTERED]","password_confirmation":"[FILTERED]"}'
-          )
-        end
-
-        subject.process_action(event)
-      end
     end
 
     it 'includes redirect location in the log' do

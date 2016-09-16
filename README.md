@@ -76,32 +76,16 @@ it is left upto you to add them. Here's how to do it:
       end
     end
 
-### Filtering out controller params
-
-You may not want to log certain parameters which have sensitive information in
-them, e.g. `password`. This can be set using the `filter_parameters` option:
-
-    # Filter out some field you don't want to show
-    config.logstasher.filter_parameters << 'foo'
-
-Note that by default this is set to `['password', 'password_confirmation']`, so
-be careful when explicitly setting, as you may lose this filtering:
-
-    # NOTE: password and password_confirmation will no longer be filtered
-    config.logstasher.filter_parameters = ['foo']
-
-Any filtered parameter will still show in the `params` field, but it's value
-will be `[FILTERED]`.
-
 ## Installation for Grape Application
 
-### In your Gemfile:
+### In your Gemfile: 
 
     gem "rv-logstasher"
     gem "grape_logging"
-
+    
+    
 ### Init logger:
-
+    
     module TestApp
       def self.logger
         @logger ||= LogStasher.logger_for_app('app_name', Rack::Directory.new("").root, STDOUT)
@@ -109,14 +93,14 @@ will be `[FILTERED]`.
     end
 
 ### Setup Grape request/exception logging
-
+     
     module TestApp
       class API < Grape::API
         logger TestApp.logger
         use GrapeLogging::Middleware::RequestLogger, logger: TestApp.logger
-
+        
         rescue_from TestApp::NotFound do |err|
-          # Tag your exception
+          # Tag your exception 
           API.logger.info(exception: err, tags: "rescued_exception", status: 404)
           error_response(message: "Not found", status: 404)
         end
@@ -127,6 +111,8 @@ will be `[FILTERED]`.
         end
       end
     end
+
+
 
 ## Copyright
 
